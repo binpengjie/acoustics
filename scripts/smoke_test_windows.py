@@ -7,6 +7,8 @@ import subprocess
 import sys
 import time
 import traceback
+import argparse
+import zipfile
 from pathlib import Path
 from urllib.request import urlopen
 
@@ -30,7 +32,7 @@ def reexec_into_project_venv() -> None:
         pass
     env = os.environ.copy()
     env["OKNG_SMOKE_IN_VENV"] = "1"
-    result = subprocess.run([str(venv_python), str(Path(__file__).resolve())], cwd=ROOT, env=env)
+    result = subprocess.run([str(venv_python), str(Path(__file__).resolve()), *sys.argv[1:]], cwd=ROOT, env=env)
     raise SystemExit(result.returncode)
 
 
@@ -168,54 +170,88 @@ def terminate_process(process: subprocess.Popen) -> None:
         process.wait(timeout=15)
 
 
-def run_streamlit_startup_check() -> dict[str, str]:
+def prepare_package_root(from_zip: bool) -> Path:
+    if not from_zip:
+        return ROOT / "dist" / "OKNG_Inspector_Windows"
+    zip_path = ROOT / "dist" / "OKNG_Inspector_Windows_v0.1.zip"
+    require_path(zip_path)
+    extract_root = OUT_DIR / "extracted_portable"
+    if extract_root.exists():
+        import shutil
+
+        shutil.rmtree(extract_root)
+    extract_root.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        zf.extractall(extract_root)
+    package_root = extract_root / "OKNG_Inspector_Windows"
+    require_path(package_root)
+    return package_root
+
+
+def run_streamlit_startup_check(package_root: Path, require_packaged_exe: bool = False) -> dict[str, str]:
     url = "http://127.0.0.1:8765"
     env = os.environ.copy()
     env["OKNG_CI"] = "1"
     env["OKNG_PORT"] = "8765"
 
-    exe = ROOT / "dist" / "OKNG_Inspector_Windows" / "OKNG_Inspector.exe"
+    exe = package_root / "OKNG_Inspector.exe"
     attempts = []
     if exe.exists():
-        attempts.append(("packaged_exe", [str(exe)]))
-    attempts.append(
-        (
-            "source_streamlit",
-            [
-                sys.executable,
-                "-m",
-                "streamlit",
-                "run",
-                str(ROOT / "app.py"),
-                "--server.headless",
-                "true",
-                "--server.port",
-                "8765",
-                "--server.address",
-                "127.0.0.1",
-                "--browser.gatherUsageStats",
-                "false",
-            ],
+        attempts.append(("packaged_exe", [str(exe)], package_root))
+    elif require_packaged_exe:
+        raise FileNotFoundError(f"Packaged exe missing: {exe}")
+    if not require_packaged_exe:
+        attempts.append(
+            (
+                "source_streamlit",
+                [
+                    sys.executable,
+                    "-m",
+                    "streamlit",
+                    "run",
+                    str(ROOT / "app.py"),
+                    "--server.headless",
+                    "true",
+                    "--server.port",
+                    "8765",
+                    "--server.address",
+                    "127.0.0.1",
+                    "--browser.gatherUsageStats",
+                    "false",
+                ],
+                ROOT,
+            )
         )
-    )
 
-    for name, cmd in attempts:
+    for name, cmd, cwd in attempts:
         stream_log = OUT_DIR / f"streamlit_{name}.log"
         log(f"Starting Streamlit check via {name}")
+        log(f"Command: {cmd}")
+        log(f"CWD: {cwd}")
         with stream_log.open("w", encoding="utf-8") as f:
-            process = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=f, stderr=subprocess.STDOUT, text=True)
+            process = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=f, stderr=subprocess.STDOUT, text=True)
             try:
                 if wait_for_http(url, process):
                     log(f"Streamlit startup passed via {name}: {url}")
-                    return {"mode": name, "url": url, "log": str(stream_log.relative_to(ROOT))}
+                    return {
+                        "mode": name,
+                        "url": url,
+                        "log": str(stream_log.relative_to(ROOT)),
+                        "exe": str(exe),
+                        "cwd": str(cwd),
+                    }
                 log(f"Streamlit did not respond via {name}; returncode={process.poll()}")
             finally:
                 terminate_process(process)
 
-    raise RuntimeError("Streamlit localhost startup check failed for packaged exe and source fallback")
+    raise RuntimeError("Streamlit localhost startup check failed")
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--from-zip", action="store_true", help="Extract dist zip and test the exe from the extracted portable folder.")
+    parser.add_argument("--require-packaged-exe", action="store_true", help="Fail instead of falling back to source Streamlit if the packaged exe does not start.")
+    args = parser.parse_args()
     reexec_into_project_venv()
     os.chdir(ROOT)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -239,11 +275,18 @@ def main() -> int:
         ]
         for path in required_paths:
             require_path(path)
+        package_root = prepare_package_root(args.from_zip)
+        require_path(package_root / "OKNG_Inspector.exe")
+        require_path(package_root / "app.py")
+        require_path(package_root / "src")
+        require_path(package_root / "models")
+        require_path(package_root / "configs")
+        summary["portable_package_root"] = str(package_root)
         summary["dependency_versions"] = import_versions()
         summary["loaded_models"] = load_models()
         wav_path = create_synthetic_wav()
         summary["prediction"] = run_batch_prediction(wav_path)
-        summary["streamlit"] = run_streamlit_startup_check()
+        summary["streamlit"] = run_streamlit_startup_check(package_root, args.require_packaged_exe)
         summary["status"] = "passed"
         SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
         log(f"Wrote summary: {SUMMARY_PATH.relative_to(ROOT)}")

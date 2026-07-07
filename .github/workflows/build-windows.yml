@@ -49,7 +49,17 @@ jobs:
 
       - name: Run smoke test
         shell: cmd
-        run: python scripts\smoke_test_windows.py
+        run: python scripts\smoke_test_windows.py --from-zip --require-packaged-exe
+
+      - name: Print smoke test summary
+        if: always()
+        shell: cmd
+        run: |
+          if exist smoke_test_outputs\smoke_test_summary.json (
+            type smoke_test_outputs\smoke_test_summary.json
+          ) else (
+            echo smoke_test_summary.json was not created
+          )
 
       - name: Upload artifacts
         if: always()
