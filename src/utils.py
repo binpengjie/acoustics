@@ -17,6 +17,11 @@ def read_json(path: Path):
 def load_json(path: Path):
     return read_json(Path(path))
 
+def ensure_dir(path) -> Path:
+    p = Path(path)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
 def collect_audio_files(input_path, supported_extensions=None) -> list[Path]:
     exts = {e.lower() for e in (supported_extensions or [".wav", ".flac", ".mp3", ".m4a"])}
     path = Path(input_path)

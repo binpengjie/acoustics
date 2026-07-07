@@ -40,3 +40,37 @@ def score_histogram_figure(df):
         ax.legend()
     fig.tight_layout()
     return fig
+
+def save_diagnostics(path, window_scores=None, output_dir=None):
+    output_dir = Path(output_dir or "outputs/diagnostics")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    stem = Path(path).stem
+    saved = {}
+
+    fig = waveform_figure(path)
+    waveform_path = output_dir / f"{stem}_waveform.png"
+    fig.savefig(waveform_path, dpi=140)
+    plt.close(fig)
+    saved["waveform"] = str(waveform_path)
+
+    fig = spectrogram_figure(path)
+    spectrogram_path = output_dir / f"{stem}_spectrogram.png"
+    fig.savefig(spectrogram_path, dpi=140)
+    plt.close(fig)
+    saved["spectrogram"] = str(spectrogram_path)
+
+    if window_scores is not None and len(window_scores) and "window_NG_score" in window_scores:
+        fig, ax = plt.subplots(figsize=(8, 2.8))
+        x = window_scores.get("window_start_sec", window_scores.index)
+        ax.plot(x, window_scores["window_NG_score"], marker="o", linewidth=1.0)
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("NG score")
+        ax.set_ylim(0, 1)
+        ax.set_title("Window NG score")
+        fig.tight_layout()
+        score_path = output_dir / f"{stem}_window_scores.png"
+        fig.savefig(score_path, dpi=140)
+        plt.close(fig)
+        saved["window_scores"] = str(score_path)
+
+    return saved

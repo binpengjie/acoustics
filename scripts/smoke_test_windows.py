@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import time
+import traceback
 from pathlib import Path
 from urllib.request import urlopen
 
@@ -251,8 +252,10 @@ def main() -> int:
     except Exception as exc:
         summary["status"] = "failed"
         summary["error"] = repr(exc)
+        summary["traceback"] = traceback.format_exc()
         SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
         log(f"Smoke test failed: {exc!r}")
+        log(summary["traceback"])
         return 1
 
 
