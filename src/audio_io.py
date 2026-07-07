@@ -1,10 +1,18 @@
 from __future__ import annotations
+from dataclasses import dataclass
 import math
 import struct
 from pathlib import Path
 import numpy as np
 from scipy import signal
 from .config import TARGET_SR, AUDIO_EXTS
+
+@dataclass
+class AudioInfo:
+    original_sample_rate: int
+    channels: int
+    duration_sec: float
+    warning: str = ""
 
 def read_wav_tolerant(path: str | Path):
     path = Path(path)
@@ -106,6 +114,36 @@ def load_for_lineB(path: str | Path):
     if peak > 0:
         x = x / peak
     return x.astype(np.float32), sr, {"sample_rate": original_sr, "channels": channels, "bits": bits, "duration_sec": len(x)/sr}
+
+def load_audio(path: str | Path, target_sr: int = TARGET_SR) -> tuple[np.ndarray, AudioInfo]:
+    warning = ""
+    try:
+        original_sr, data, channels, bits = read_wav_tolerant(path)
+        x = mono_average(data, bits=bits)
+    except Exception as wav_exc:
+        try:
+            import soundfile as sf
+
+            data, original_sr = sf.read(path, always_2d=True)
+            channels = int(data.shape[1])
+            x = mono_average(data)
+            warning = f"Loaded with soundfile fallback after WAV reader warning: {wav_exc}"
+        except Exception:
+            raise wav_exc
+    x, sr = resample_if_needed(x, int(original_sr), int(target_sr))
+    if x.size == 0:
+        x = np.zeros(1, dtype=np.float32)
+    x = x - float(np.mean(x))
+    peak = float(np.max(np.abs(x))) if x.size else 0.0
+    if peak > 0:
+        x = x / peak
+    info = AudioInfo(
+        original_sample_rate=int(original_sr),
+        channels=int(channels),
+        duration_sec=float(len(x) / sr),
+        warning=warning,
+    )
+    return x.astype(np.float32), info
 
 def find_audio_files(path: str | Path, recursive: bool = True) -> list[Path]:
     p = Path(path)
