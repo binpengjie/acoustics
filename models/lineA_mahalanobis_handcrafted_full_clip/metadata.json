@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-07-07 01:19:51",
+  "model_name": "mahalanobis_handcrafted_full_clip",
+  "target_sample_rate": 16000,
+  "channel_mode": "mono_average",
+  "amplitude_mode": "original_previous_pipeline_dc_removed_no_peak_norm_unless_needed",
+  "feature_count": 163,
+  "threshold": 162.18298627520178,
+  "threshold_rule": "ng_recall_then_ok_fpr_le_0p10",
+  "score_definition": "Mahalanobis distance in OK-standardized handcrafted full-clip feature space",
+  "runtime_path_policy": "Use paths relative to the package root."
+}

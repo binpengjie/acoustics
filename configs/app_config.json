@@ -1,0 +1,8 @@
+{
+  "app_name": "OKNG Acoustic Inspector",
+  "version": "0.1.0",
+  "default_port": 8501,
+  "output_directory": "outputs",
+  "supported_extensions": [".wav", ".flac", ".mp3", ".m4a"],
+  "preferred_format_note": "WAV is the most reliable supported format. MP3/M4A may require optional codec support."
+}

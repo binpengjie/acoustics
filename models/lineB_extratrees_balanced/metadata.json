@@ -1,0 +1,13 @@
+{
+  "model_name": "ExtraTrees_balanced",
+  "sklearn_version_required": "1.2.2",
+  "class_mapping": {
+    "0": "OK",
+    "1": "NG"
+  },
+  "score": "predict_proba(X)[:, 1] = probability-like NG score",
+  "decision_threshold": 0.5,
+  "preprocessing": "Line B: tolerant WAV read, stereo mean to mono, resample to 16 kHz, DC removal, peak normalization, full clip.",
+  "feature_count": 202,
+  "runtime_path_policy": "Use paths relative to the package root."
+}

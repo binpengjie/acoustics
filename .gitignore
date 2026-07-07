@@ -1,0 +1,36 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build and packaging outputs
+build/
+dist/
+*.spec
+*.zip
+*.7z
+*.tar.gz
+
+# Runtime outputs and logs
+outputs/
+logs/
+*.log
+smoke_test_predictions.csv
+
+# Local OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Streamlit local state
+.streamlit/secrets.toml

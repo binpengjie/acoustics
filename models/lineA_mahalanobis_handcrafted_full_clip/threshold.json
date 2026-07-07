@@ -1,0 +1,16 @@
+{
+  "threshold_rule": "ng_recall_then_ok_fpr_le_0p10",
+  "threshold_median": 162.18298627520178,
+  "test_ng_recall_mean": 0.9522727272727274,
+  "test_ng_false_negative_rate_mean": 0.04772727272727273,
+  "test_ok_false_positive_rate_mean": 0.06103896103896104,
+  "test_balanced_accuracy_mean": 0.9456168831168833,
+  "test_precision_mean": 0.9729403660731306,
+  "test_f1_mean": 0.9624012917136902,
+  "test_roc_auc_mean": 0.9784902597402597,
+  "test_pr_auc_mean": 0.9839037517038829,
+  "recommended_threshold": 162.18298627520178,
+  "score_definition": "Mahalanobis distance in OK-standardized handcrafted full-clip feature space",
+  "normal_label": "OK",
+  "anomaly_label": "NG"
+}

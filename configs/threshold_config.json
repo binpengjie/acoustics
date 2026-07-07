@@ -1,0 +1,9 @@
+{
+  "balanced_threshold": 0.5,
+  "high_recall_threshold": 0.42,
+  "window_sensitive_threshold": 0.5,
+  "review_margin": 0.05,
+  "fusion_weight_full": 0.5,
+  "threshold_origin": "Line-B benchmark random split. Equal-weight fusion threshold 0.42 gave NG_recall=1.0 and OK_FPR about 0.0261 on the random split.",
+  "warning": "Validate thresholds on new dates, new product types, and new acquisition conditions before production use."
+}

@@ -1,0 +1,11 @@
+{
+  "model_version": "okng_lineB_v0.1",
+  "model_type": "classical_sklearn_feature_models",
+  "feature_pipeline_version": "classical_features_v1_from_lineB_benchmark",
+  "sample_rate_hz": 16000,
+  "full_clip_model_path": "models/full_clip_extratrees.joblib",
+  "window_model_path": "models/window_rf_4s.joblib",
+  "feature_names_path": "models/feature_names.json",
+  "window_default_sec": 4.0,
+  "window_default_aggregation": "max"
+}
