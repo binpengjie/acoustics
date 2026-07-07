@@ -15,6 +15,9 @@ env/
 # Build and packaging outputs
 build/
 dist/
+.pip_cache/
+.pyinstaller_config/
+tmp/
 *.spec
 *.zip
 *.7z

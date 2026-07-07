@@ -1,0 +1,63 @@
+name: Build OKNG Inspector Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    name: Build Windows portable package
+    runs-on: windows-2025
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.11 x64
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+
+      - name: Print diagnostics
+        shell: cmd
+        run: |
+          python --version
+          python -m pip --version
+          cd
+          dir
+
+      - name: Run build_windows.bat
+        shell: cmd
+        run: build_windows.bat
+
+      - name: Verify build outputs
+        shell: cmd
+        run: |
+          if not exist dist\OKNG_Inspector_Windows\OKNG_Inspector.exe (
+            echo Missing dist\OKNG_Inspector_Windows\OKNG_Inspector.exe
+            exit /b 1
+          )
+          if not exist dist\OKNG_Inspector_Windows_v0.1.zip (
+            echo Missing dist\OKNG_Inspector_Windows_v0.1.zip
+            exit /b 1
+          )
+          for %%A in (dist\OKNG_Inspector_Windows_v0.1.zip) do echo Zip size bytes: %%~zA
+
+      - name: Run smoke test
+        shell: cmd
+        run: python scripts\smoke_test_windows.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OKNG_Inspector_Windows_v0.1
+          path: |
+            dist/OKNG_Inspector_Windows_v0.1.zip
+            smoke_test_outputs/**
+            dist/OKNG_Inspector_Setup_v0.1.exe
+          if-no-files-found: error
+          retention-days: 3

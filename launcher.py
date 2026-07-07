@@ -47,15 +47,23 @@ def main() -> int:
 
     os.chdir(ROOT)
     os.environ.setdefault("OKNG_PACKAGE_ROOT", str(ROOT))
-    port = choose_port(8501)
-    url = f"http://localhost:{port}"
+    ci_mode = os.environ.get("OKNG_CI", "").strip().lower() in {"1", "true", "yes"}
+    if ci_mode:
+        port = int(os.environ.get("OKNG_PORT", "8765"))
+        address = "127.0.0.1"
+    else:
+        port = choose_port(8501)
+        address = "localhost"
+    url = f"http://{address}:{port}"
     print("Starting OKNG Inspector local web app...")
     print(f"Package folder: {ROOT}")
-    print(f"Opening {url}")
-    threading.Timer(2.0, lambda: webbrowser.open(url)).start()
+    print(f"Local URL: {url}")
+    if not ci_mode:
+        threading.Timer(2.0, lambda: webbrowser.open(url)).start()
     sys.argv = [
         "streamlit", "run", str(app_file),
         "--server.port", str(port),
+        "--server.address", address,
         "--server.headless", "true",
         "--browser.gatherUsageStats", "false",
     ]

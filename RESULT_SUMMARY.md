@@ -39,6 +39,22 @@ Optional modes: `lineB_only`, `lineA_only`, `conservative`.
 ## Known Limitation
 
 The app was generated and tested on Linux/server. Actual `.bat` double-click launch must still be verified on a Windows PC.
+
+## GitHub Actions Cloud Windows Build
+
+Added workflow `Build OKNG Inspector Windows` at `.github/workflows/build-windows.yml`.
+
+Supported triggers:
+- Manual: `workflow_dispatch`
+- Tag push: `v*`
+
+The build runs on GitHub-hosted `windows-2025` with Python 3.11 x64, not on the local Windows machine. It runs `build_windows.bat`, verifies `dist/OKNG_Inspector_Windows/OKNG_Inspector.exe` and `dist/OKNG_Inspector_Windows_v0.1.zip`, runs `scripts/smoke_test_windows.py`, then uploads artifact `OKNG_Inspector_Windows_v0.1` with 3-day retention.
+
+Smoke test coverage: file integrity, dependency imports, all `models/**/*.joblib` loading, synthetic wav prediction through `batch_predict.py`, output CSV/HTML report generation, and localhost Streamlit startup.
+
+User download path after a successful run: GitHub repo -> Actions -> Build OKNG Inspector Windows -> selected run -> Artifacts -> `OKNG_Inspector_Windows_v0.1`.
+
+The app remains usable, but thresholds must be revalidated for new dates, product types, and acquisition conditions because group-holdout robustness was weaker than random-split performance.
 ## Blind Test 2026-07-07
 
 Input data: `/data1/pengjie/engineering/test`, extracted to `/data1/pengjie/engineering/test/extracted`.

@@ -4,6 +4,13 @@ Last update: 2026-07-07
 
 Current valid Windows Streamlit package is in this directory.
 
+GitHub Actions cloud build has been added:
+- Workflow: `.github/workflows/build-windows.yml`
+- Manual trigger: GitHub Actions -> Build OKNG Inspector Windows -> Run workflow
+- Tag trigger: push tags matching `v*`
+- Smoke test script: `scripts/smoke_test_windows.py`
+- Artifact: `OKNG_Inspector_Windows_v0.1`
+
 Primary entry points:
 - `app.py`
 - `install_env.bat`

@@ -62,6 +62,16 @@ Update `model_metadata.json`, thresholds, and model version after retraining.
 
 ## Build Windows Executable
 
+Preferred cloud build:
+
+Use GitHub Actions so no Windows build tools are installed on a local PC:
+
+`Actions -> Build OKNG Inspector Windows -> Run workflow`
+
+Details are in `README_GITHUB_ACTIONS_CN.md`.
+
+Optional local build on a dedicated Windows build machine:
+
 Run on Windows:
 
 ```bat

@@ -1,0 +1,29 @@
+{
+  "model_version": "okng_lineB_v0.1",
+  "model_type": "classical_sklearn_feature_models",
+  "primary_model": "full_clip_extratrees_balanced",
+  "window_model": "window_rf_4s_balanced",
+  "feature_pipeline_version": "classical_features_v1_from_lineB_benchmark",
+  "sample_rate_hz": 16000,
+  "thresholds": {
+    "balanced": 0.5,
+    "high_recall": 0.42,
+    "window_sensitive": 0.5,
+    "fusion_weight_full": 0.5
+  },
+  "expected_random_split_metrics": {
+    "full_clip_extratrees_balanced": {
+      "balanced_accuracy": 0.9962,
+      "ng_recall": 0.9925,
+      "ng_false_negative_rate": 0.0075,
+      "pr_auc": 0.9999
+    },
+    "high_recall_equal_weight_fusion_threshold_0.42": {
+      "ng_recall": 1.0,
+      "ng_false_negative_rate": 0.0,
+      "ok_false_positive_rate": 0.0261
+    }
+  },
+  "robustness_warning": "Random split performance was excellent, but group-holdout robustness was weaker. Revalidate thresholds for new dates, product types, microphones, gains, and acquisition conditions.",
+  "source_manifest": "models/model_manifest.json"
+}

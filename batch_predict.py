@@ -12,5 +12,7 @@ def main():
     out=ensure_dir(args.output); diag=ensure_dir(out/"diagnostics"); bundle=load_model_bundle(ROOT); df,win,feat=predict_input_path(args.input,bundle=bundle,mode=args.mode,threshold=args.threshold,fusion_weight=args.fusion_weight,window_sec=args.window_sec,aggregation=args.aggregation,review_margin=args.review_margin); csv=out/"predictions.csv"; df.to_csv(csv,index=False,encoding="utf-8-sig")
     if args.diagnostics:
         for _,row in df[df["prediction"].isin(["NG","Review"])].head(100).iterrows(): save_diagnostics(row["file"],win.get(row["file"]),diag)
-    report=generate_html_report(csv,out/"report.html",ROOT/"configs/app_config.json",ROOT/"configs/threshold_config.json",ROOT/"models/model_metadata.json",input_path=args.input,diagnostics_dir=diag); print(f"Wrote {csv}"); print(f"Wrote {report}"); return 0
+    metadata_path=ROOT/"models/model_metadata.json"
+    if not metadata_path.exists(): metadata_path=ROOT/"models/model_manifest.json"
+    report=generate_html_report(csv,out/"report.html",ROOT/"configs/app_config.json",ROOT/"configs/threshold_config.json",metadata_path,input_path=args.input,diagnostics_dir=diag); print(f"Wrote {csv}"); print(f"Wrote {report}"); return 0
 if __name__=="__main__": raise SystemExit(main())
