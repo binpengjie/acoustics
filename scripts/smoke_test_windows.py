@@ -223,6 +223,7 @@ def run_streamlit_startup_check(package_root: Path, require_packaged_exe: bool =
             )
         )
 
+    attempt_results = []
     for name, cmd, cwd in attempts:
         stream_log = OUT_DIR / f"streamlit_{name}.log"
         log(f"Starting Streamlit check via {name}")
@@ -239,12 +240,25 @@ def run_streamlit_startup_check(package_root: Path, require_packaged_exe: bool =
                         "log": str(stream_log.relative_to(ROOT)),
                         "exe": str(exe),
                         "cwd": str(cwd),
+                        "attempts": attempt_results,
                     }
+                log_tail = ""
+                if stream_log.exists():
+                    log_tail = stream_log.read_text(encoding="utf-8", errors="replace")[-8000:]
+                attempt = {
+                    "mode": name,
+                    "returncode": process.poll(),
+                    "log": str(stream_log.relative_to(ROOT)),
+                    "log_tail": log_tail,
+                }
+                attempt_results.append(attempt)
                 log(f"Streamlit did not respond via {name}; returncode={process.poll()}")
+                if log_tail:
+                    log("Streamlit log tail:\n" + log_tail)
             finally:
                 terminate_process(process)
 
-    raise RuntimeError("Streamlit localhost startup check failed")
+    raise RuntimeError("Streamlit localhost startup check failed; attempts=" + json.dumps(attempt_results, ensure_ascii=False))
 
 
 def main() -> int:
