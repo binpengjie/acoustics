@@ -1,0 +1,40 @@
+Smoke test root: D:\a\acoustics\acoustics
+Python executable: D:\a\acoustics\acoustics\.venv\Scripts\python.exe
+OK path: dist\OKNG_Inspector_Windows\OKNG_Inspector.exe
+OK path: dist\OKNG_Inspector_Windows
+OK path: models
+OK path: configs
+OK path: app.py
+OK path: src
+OK path: README_WINDOWS_USER.md
+OK path: dist\OKNG_Inspector_Windows_v0.1.zip
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows\OKNG_Inspector.exe
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows\app.py
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows\src
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows\models
+OK path: smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows\configs
+Imported numpy: 1.26.4
+Imported scipy: 1.11.4
+Imported sklearn: 1.2.2
+Imported joblib: 1.3.2
+Imported streamlit: 1.36.0
+Imported pandas: 2.1.4
+Imported matplotlib: 3.8.2
+Imported pywt: 1.5.0
+Imported soundfile: 0.12.1
+Loaded model: models\full_clip_extratrees.joblib -> sklearn.pipeline.Pipeline
+Loaded model: models\lineB_extratrees_balanced\model.joblib -> sklearn.pipeline.Pipeline
+Loaded model: models\window_rf_4s.joblib -> sklearn.pipeline.Pipeline
+Wrote synthetic wav: smoke_test_outputs\synthetic_test.wav
+Running batch prediction CLI
+Wrote D:\a\acoustics\acoustics\smoke_test_outputs\batch_prediction\predictions.csv
+Wrote D:\a\acoustics\acoustics\smoke_test_outputs\batch_prediction\report.html
+OK path: smoke_test_outputs\batch_prediction\predictions.csv
+OK path: smoke_test_outputs\batch_prediction\report.html
+Starting Streamlit check via packaged_exe
+Command: ['D:\\a\\acoustics\\acoustics\\smoke_test_outputs\\extracted_portable\\OKNG_Inspector_Windows\\OKNG_Inspector.exe']
+CWD: D:\a\acoustics\acoustics\smoke_test_outputs\extracted_portable\OKNG_Inspector_Windows
+Streamlit startup passed via packaged_exe: http://127.0.0.1:8765
+Wrote summary: smoke_test_outputs\smoke_test_summary.json
+Smoke test passed

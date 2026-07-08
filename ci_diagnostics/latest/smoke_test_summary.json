@@ -1,0 +1,44 @@
+{
+  "root": "D:\\a\\acoustics\\acoustics",
+  "python": "D:\\a\\acoustics\\acoustics\\.venv\\Scripts\\python.exe",
+  "status": "passed",
+  "portable_package_root": "D:\\a\\acoustics\\acoustics\\smoke_test_outputs\\extracted_portable\\OKNG_Inspector_Windows",
+  "dependency_versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.11.4",
+    "sklearn": "1.2.2",
+    "joblib": "1.3.2",
+    "streamlit": "1.36.0",
+    "pandas": "2.1.4",
+    "matplotlib": "3.8.2",
+    "pywt": "1.5.0",
+    "soundfile": "0.12.1"
+  },
+  "loaded_models": [
+    {
+      "path": "models\\full_clip_extratrees.joblib",
+      "type": "sklearn.pipeline.Pipeline"
+    },
+    {
+      "path": "models\\lineB_extratrees_balanced\\model.joblib",
+      "type": "sklearn.pipeline.Pipeline"
+    },
+    {
+      "path": "models\\window_rf_4s.joblib",
+      "type": "sklearn.pipeline.Pipeline"
+    }
+  ],
+  "prediction": {
+    "mode": "batch_cli",
+    "predictions_csv": "smoke_test_outputs\\batch_prediction\\predictions.csv",
+    "report_html": "smoke_test_outputs\\batch_prediction\\report.html"
+  },
+  "streamlit": {
+    "mode": "packaged_exe",
+    "url": "http://127.0.0.1:8765",
+    "log": "smoke_test_outputs\\streamlit_packaged_exe.log",
+    "exe": "D:\\a\\acoustics\\acoustics\\smoke_test_outputs\\extracted_portable\\OKNG_Inspector_Windows\\OKNG_Inspector.exe",
+    "cwd": "D:\\a\\acoustics\\acoustics\\smoke_test_outputs\\extracted_portable\\OKNG_Inspector_Windows",
+    "attempts": []
+  }
+}
