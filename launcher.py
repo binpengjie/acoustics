@@ -4,6 +4,7 @@ import os
 import socket
 import sys
 import threading
+import traceback
 import webbrowser
 from pathlib import Path
 
@@ -16,6 +17,28 @@ def package_root() -> Path:
 
 
 ROOT = package_root()
+
+
+def ci_mode_enabled() -> bool:
+    return os.environ.get("OKNG_CI", "").strip().lower() in {"1", "true", "yes"}
+
+
+def write_launcher_log(message: str) -> None:
+    try:
+        log_path = ROOT / "OKNG_launcher_error.log"
+        log_path.write_text(message, encoding="utf-8")
+        print(f"Launcher error log: {log_path}")
+    except Exception:
+        print(message)
+
+
+def pause_on_error() -> None:
+    if ci_mode_enabled():
+        return
+    try:
+        input("Press Enter to close this window...")
+    except Exception:
+        pass
 
 
 def port_available(port: int) -> bool:
@@ -34,9 +57,13 @@ def main() -> int:
     try:
         from streamlit.web import cli as stcli
     except Exception as exc:
-        print("Streamlit is not available inside this package.")
-        print("If running from source, install requirements_windows.txt first.")
-        print(repr(exc))
+        msg = (
+            "Streamlit is not available inside this package.\n"
+            "If running from source, install requirements_windows.txt first.\n"
+            f"{repr(exc)}\n\n{traceback.format_exc()}"
+        )
+        write_launcher_log(msg)
+        pause_on_error()
         return 1
 
     app_file = ROOT / "app.py"
@@ -47,7 +74,7 @@ def main() -> int:
 
     os.chdir(ROOT)
     os.environ.setdefault("OKNG_PACKAGE_ROOT", str(ROOT))
-    ci_mode = os.environ.get("OKNG_CI", "").strip().lower() in {"1", "true", "yes"}
+    ci_mode = ci_mode_enabled()
     if ci_mode:
         port = int(os.environ.get("OKNG_PORT", "8765"))
         address = "127.0.0.1"
@@ -71,4 +98,15 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 0
+        if code not in (0, None):
+            write_launcher_log(f"OKNG Inspector exited with code {code}.")
+            pause_on_error()
+        raise
+    except BaseException:
+        write_launcher_log("Unhandled OKNG Inspector launcher error:\n\n" + traceback.format_exc())
+        pause_on_error()
+        raise
