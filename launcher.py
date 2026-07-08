@@ -74,6 +74,7 @@ def main() -> int:
 
     os.chdir(ROOT)
     os.environ.setdefault("OKNG_PACKAGE_ROOT", str(ROOT))
+    os.environ.setdefault("STREAMLIT_GLOBAL_DEVELOPMENT_MODE", "false")
     ci_mode = ci_mode_enabled()
     if ci_mode:
         port = int(os.environ.get("OKNG_PORT", "8765"))
@@ -89,6 +90,7 @@ def main() -> int:
         threading.Timer(2.0, lambda: webbrowser.open(url)).start()
     sys.argv = [
         "streamlit", "run", str(app_file),
+        "--global.developmentMode", "false",
         "--server.port", str(port),
         "--server.address", address,
         "--server.headless", "true",
